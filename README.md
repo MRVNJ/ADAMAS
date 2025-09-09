@@ -35,7 +35,8 @@ This project serves as the capstone for my Computer Science studies and a corner
 *   **API Paradigm:** RESTful API
 
 ### Database & Data Processing
-*   **Primary Database:** [PostgreSQL](https://www.postgresql.org/) with `JSONB` for flexible metric storage (hosted on [Supabase](https://supabase.com/) or [Neon](https://neon.tech/))
+*   **Primary Database:** [PostgreSQL](https://www.postgresql.org/) with `JSONB` for flexible metric storage (hosted on [Supabase](https://supabase.com/)
+*   **ORM** [Prisma](https://www.prisma.io)
 *   **Analytics Database:** [ClickHouse](https://clickhouse.com/) (for high-performance aggregations)
 *   **Data Processing:** [Python](https://www.python.org/), [Pandas](https://pandas.pydata.org/), [NumPy](https://numpy.org/)
 *   **Machine Learning:** [Scikit-learn](https://scikit-learn.org/stable/)

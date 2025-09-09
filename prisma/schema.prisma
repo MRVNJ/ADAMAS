@@ -1,0 +1,160 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
+  passwordHash  String          @map("password_hash")
+  firstName     String          @map("first_name")
+  lastName      String          @map("last_name")
+  dateOfBirth   DateTime?       @map("date_of_birth")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  userTypes     UserUserType[]
+  sports        UserSport[]
+
+  @@map("users")
+  Team Team[] @relation("CreatedTeams")
+  TeamMember TeamMember[]
+  Activity Activity[]
+}
+
+model UserType {
+  id        Int             @id @default(autoincrement())
+  name      String          @unique
+  users     UserUserType[]
+
+  @@map("user_types")
+}
+
+model UserUserType {
+  userId     Int
+  userTypeId Int
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userType   UserType @relation(fields: [userTypeId], references: [id], onDelete: Cascade)
+
+  @@id([userId, userTypeId])
+  @@map("user_user_types")
+}
+
+model Sport {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  description String?
+
+  users       UserSport[]
+
+  @@map("sports")
+  Team Team[]
+  ActivityType ActivityType[]
+  MetricDefinition MetricDefinition[]
+}
+
+model UserSport {
+  userId  Int
+  sportId Int
+
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sport   Sport @relation(fields: [sportId], references: [id], onDelete: Cascade)
+
+  @@id([userId, sportId])
+  @@map("user_sports")
+}
+
+model Team {
+  id         Int          @id @default(autoincrement())
+  name       String
+  sportId    Int?         @map("sport_id")
+  createdBy  Int?         @map("created_by")
+  createdAt  DateTime     @default(now()) @map("created_at")
+
+  sport      Sport?       @relation(fields: [sportId], references: [id])
+  creator    User?        @relation("CreatedTeams", fields: [createdBy], references: [id])
+  members    TeamMember[]
+
+  @@map("teams")
+  Activity Activity[]
+}
+
+model TeamMember {
+  teamId   Int
+  userId   Int
+  role     String    @default("member")
+  joinedAt DateTime  @default(now()) @map("joined_at")
+
+  team     Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, userId])
+  @@map("team_members")
+}
+
+model ActivityType {
+  id      Int     @id @default(autoincrement())
+  name    String  @unique
+  sportId Int?    @map("sport_id")
+
+  sport     Sport?      @relation(fields: [sportId], references: [id])
+  activities Activity[]
+
+  @@map("activity_types")
+}
+
+model Activity {
+  id             Int           @id @default(autoincrement())
+  userId         Int           @map("user_id")
+  teamId         Int?          @map("team_id")
+  activityTypeId Int           @map("activity_type_id")
+  title          String
+  description    String?
+  startTime      DateTime      @map("start_time")
+  endTime        DateTime      @map("end_time")
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team        Team?        @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  activityType ActivityType @relation(fields: [activityTypeId], references: [id])
+  metrics     ActivityMetric[]
+
+  @@map("activities")
+}
+
+model ActivityMetric {
+  id         Int      @id @default(autoincrement())
+  activityId Int      @map("activity_id")
+  source     String?
+  metrics    Json
+  timeSeries Json?    @map("time_series")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@map("activity_metrics")
+}
+
+model MetricDefinition {
+  id          Int     @id @default(autoincrement())
+  sportId     Int?    @map("sport_id")
+  name        String
+  dataType    String  @map("data_type") // 'number', 'boolean', etc.
+  unit        String?
+  description String?
+
+  sport Sport? @relation(fields: [sportId], references: [id])
+
+  @@map("metric_definitions")
+}
