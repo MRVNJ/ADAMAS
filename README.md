@@ -1,6 +1,6 @@
 # ADAMAS (Athletic Data Analytics & Management System)
 
-![ADASAS Logo](https://via.placeholder.com/150x150.png?text=ADAMAS) 
+![ADAMAS](https://via.placeholder.com/150x150.png?text=ADAMAS) 
 *<!-- Replace with your own logo later -->*
 
 ADAMAS is a full-stack web application designed for athletes, coaches, and sports managers to centralize training data, derive actionable insights, and build better training plans. It enables the ingestion, management, and analysis of heterogeneous sports data through a modern, data-centric platform.
